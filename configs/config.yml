@@ -1,0 +1,7 @@
+log_level: debug
+host: "http://localhost:8080"
+
+http:
+  port: 8080
+  auth_token_exp_time: 900
+  auth_secret: vAgYeiQkA6rxK9TmJjTd
