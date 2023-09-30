@@ -1,0 +1,58 @@
+definitions:
+  http.AuthRequest:
+    properties:
+      password:
+        example: mycoolpassword123
+        type: string
+      username:
+        example: test@example.com
+        type: string
+    type: object
+  http.AuthResponse:
+    properties:
+      accessToken:
+        type: string
+    type: object
+  http.GenericResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/auth:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Input model
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/http.AuthRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.AuthResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.GenericResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.GenericResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.GenericResponse'
+      summary: Request to issue access token
+      tags:
+      - auth
+swagger: "2.0"
