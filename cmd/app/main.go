@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/nightlord189/ca-url-shortener/internal/config"
 	"github.com/nightlord189/ca-url-shortener/internal/delivery/http"
+	"github.com/nightlord189/ca-url-shortener/internal/repo/mongo"
 	"github.com/nightlord189/ca-url-shortener/internal/usecase"
 	"go.uber.org/zap"
 )
@@ -21,7 +22,12 @@ func main() {
 
 	logger.Info("start #2")
 
-	usecaseInst := usecase.New(cfg)
+	mongoRepo, err := mongo.New(cfg.Mongo)
+	if err != nil {
+		logger.Fatal("init mongo repo error: ", zap.Error(err))
+	}
+
+	usecaseInst := usecase.New(cfg, mongoRepo)
 
 	handler := http.New(cfg.HTTP, usecaseInst)
 

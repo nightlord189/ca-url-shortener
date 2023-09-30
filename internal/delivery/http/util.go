@@ -4,10 +4,33 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/golang-jwt/jwt"
 	"github.com/nightlord189/ca-url-shortener/pkg/log"
 	"io"
 	"net/http"
+	"time"
 )
+
+func (h *Handler) getToken(username string) (string, error) {
+	payload := jwt.MapClaims{
+		"username": username,
+		"iat":      time.Now().Unix(),
+		"exp":      time.Now().Add(time.Second * time.Duration(h.Config.AuthTokenExpTime)).Unix(),
+		"iss":      "ca-url-shortener",
+	}
+
+	return createToken(payload, h.Config.AuthSecret)
+}
+
+func createToken(payload jwt.MapClaims, secret string) (string, error) {
+	var err error
+	at := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
+	token, err := at.SignedString([]byte(secret))
+	if err != nil {
+		return "", err
+	}
+	return token, nil
+}
 
 func responseJSON(ctx context.Context, w http.ResponseWriter, statusCode int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")

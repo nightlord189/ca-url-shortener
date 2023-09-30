@@ -1,7 +1,9 @@
 package http
 
+import "context"
+
 type IUsecase interface {
-	Auth(username, password string) (string, error)
+	Auth(ctx context.Context, username, password string) error
 	PutLink(originalURL, username string) (string, error)
 	GetOriginalLink(short string) (string, error)
 }

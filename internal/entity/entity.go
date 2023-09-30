@@ -9,6 +9,6 @@ type User struct {
 }
 
 type Link struct {
-	Original string
-	Short    string
+	OriginalURL string
+	ShortURL    string
 }

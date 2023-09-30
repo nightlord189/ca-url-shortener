@@ -1,6 +1,8 @@
 package http
 
 import (
+	"errors"
+	"github.com/nightlord189/ca-url-shortener/internal/usecase"
 	"github.com/nightlord189/ca-url-shortener/pkg/log"
 	"net/http"
 )
@@ -32,9 +34,19 @@ func (h *Handler) Auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authToken, err := h.Usecase.Auth(req.Username, req.Password)
+	err := h.Usecase.Auth(ctx, req.Username, req.Password)
+	switch {
+	case errors.Is(err, usecase.ErrInvalidCredentials):
+		responseJSON(ctx, w, http.StatusUnauthorized, GenericError(err.Error()))
+		return
+	case err != nil:
+		responseJSON(ctx, w, http.StatusInternalServerError, GenericError("auth error: "+err.Error()))
+		return
+	}
+
+	authToken, err := h.getToken(req.Username)
 	if err != nil {
-		responseJSON(ctx, w, http.StatusInternalServerError, GenericError("auth error:"+err.Error()))
+		responseJSON(ctx, w, http.StatusInternalServerError, GenericError("create token error: "+err.Error()))
 		return
 	}
 

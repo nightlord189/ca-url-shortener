@@ -5,3 +5,10 @@ http:
   port: 8080
   auth_token_exp_time: 604800
   auth_secret: vAgYeiQkA6rxK9TmJjTd
+
+mongo:
+  host: localhost
+  port: 27017
+  user: root
+  password: password123
+  database: caurlshortener
