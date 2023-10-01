@@ -7,7 +7,8 @@ services:
     ports:
       - 8080:8080
     environment:
-      - PASSWORD=MY_COOL_PASSWORD
+      - MONGO_HOST=mongodb
+      - REDIS_HOST=redis
     depends_on:
       mongodb:
         condition: service_healthy
@@ -59,7 +60,7 @@ services:
     volumes:
       - redisdata:/root/redis
     environment:
-      - REDIS_PASSWORD=password1
+      - REDIS_PASSWORD=password123
       - REDIS_DATABASES=16
     healthcheck:
       test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]

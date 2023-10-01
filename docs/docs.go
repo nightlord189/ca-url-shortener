@@ -66,6 +66,64 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/link": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "link"
+                ],
+                "summary": "Create new short link",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Input model",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.PutLinkRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/http.PutLinkResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.GenericResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/http.GenericResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.GenericResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -96,6 +154,24 @@ const docTemplate = `{
                 "data": {},
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "http.PutLinkRequest": {
+            "type": "object",
+            "properties": {
+                "originalURL": {
+                    "type": "string",
+                    "example": "https://example.com/page1?id=3"
+                }
+            }
+        },
+        "http.PutLinkResponse": {
+            "type": "object",
+            "properties": {
+                "shortURL": {
+                    "type": "string",
+                    "example": "https://caurlshortener.com/128hbcddhs712"
                 }
             }
         }

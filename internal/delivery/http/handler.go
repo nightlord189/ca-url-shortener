@@ -30,6 +30,8 @@ func (h *Handler) Run() error {
 
 	r.Post("/api/auth", h.Auth)
 
+	r.With(h.AuthMdw).Put("/api/link", h.PutLink)
+
 	r.Mount("/swagger", httpSwagger.WrapHandler)
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", h.Config.Port), r)

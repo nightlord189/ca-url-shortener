@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func (h *Handler) getToken(username string) (string, error) {
+func (h *Handler) getJWTToken(username string) (string, error) {
 	payload := jwt.MapClaims{
 		"username": username,
 		"iat":      time.Now().Unix(),
@@ -19,10 +19,26 @@ func (h *Handler) getToken(username string) (string, error) {
 		"iss":      "ca-url-shortener",
 	}
 
-	return createToken(payload, h.Config.AuthSecret)
+	return createJWTToken(payload, h.Config.AuthSecret)
 }
 
-func createToken(payload jwt.MapClaims, secret string) (string, error) {
+func (h *Handler) isJWTTokenValid(token string) (*jwt.Token, error) {
+	jwtToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(h.Config.AuthSecret), nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("parse jwt error: %w", err)
+	}
+	if !jwtToken.Valid {
+		return nil, fmt.Errorf("invalid jwt token")
+	}
+	return jwtToken, nil
+}
+
+func createJWTToken(payload jwt.MapClaims, secret string) (string, error) {
 	var err error
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	token, err := at.SignedString([]byte(secret))

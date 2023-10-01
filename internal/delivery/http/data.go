@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"github.com/nightlord189/ca-url-shortener/internal/entity"
+	"net/url"
 )
 
 type GenericResponse struct {
@@ -33,4 +34,19 @@ func (r *AuthRequest) IsValid() error {
 
 type AuthResponse struct {
 	AccessToken string `json:"accessToken"`
+}
+
+type PutLinkRequest struct {
+	OriginalURL string `json:"originalURL" example:"https://example.com/page1?id=3"`
+}
+
+func (r *PutLinkRequest) IsValid() error {
+	if _, err := url.ParseRequestURI(r.OriginalURL); err != nil {
+		return fmt.Errorf("invalid url: %w", err)
+	}
+	return nil
+}
+
+type PutLinkResponse struct {
+	ShortURL string `json:"shortURL" example:"https://caurlshortener.com/128hbcddhs712"`
 }

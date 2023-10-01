@@ -10,6 +10,7 @@ type Config struct {
 	Host     string      `yaml:"host" env:"HOST"`
 	HTTP     HTTPConfig  `yaml:"http"`
 	Mongo    MongoConfig `yaml:"mongo"`
+	Redis    RedisConfig `yaml:"redis"`
 }
 
 type HTTPConfig struct {
@@ -24,6 +25,13 @@ type MongoConfig struct {
 	User     string `yaml:"user" env:"MONGO_USER"`
 	Password string `yaml:"password" env:"MONGO_PASSWORD"`
 	Database string `yaml:"database" env:"MONGO_DATABASE"`
+}
+
+type RedisConfig struct {
+	Host     string `yaml:"host" env:"REDIS_HOST"`
+	Port     int    `yaml:"port" env:"REDIS_PORT"`
+	Password string `yaml:"password" env:"REDIS_PASSWORD"`
+	Database int    `yaml:"database" env:"REDIS_DATABASE"`
 }
 
 func LoadConfig(configFilePath string) (Config, error) {

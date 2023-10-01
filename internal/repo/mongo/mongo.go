@@ -61,6 +61,16 @@ func (r *Repo) GetUser(ctx context.Context, username string) (*entity.User, erro
 	}
 }
 
-func (r *Repo) PutLink(username, link string) error {
-	panic("not implemented")
+func (r *Repo) UpdateUserLinks(ctx context.Context, user *entity.User) error {
+	coll := r.client.Database(r.Config.Database).Collection(usersCollection)
+
+	links := bson.M{}
+	for key, value := range user.Links {
+		links[key] = value
+	}
+
+	update := bson.D{{"$set", bson.D{{"links", links}}}}
+
+	_, err := coll.UpdateOne(ctx, bson.D{{"username", user.Username}}, update)
+	return err
 }

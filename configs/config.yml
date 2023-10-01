@@ -12,3 +12,9 @@ mongo:
   user: root
   password: password123
   database: caurlshortener
+
+redis:
+  host: localhost
+  port: 6379
+  password: password123
+  database: 0

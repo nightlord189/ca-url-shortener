@@ -44,11 +44,50 @@ func (h *Handler) Auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authToken, err := h.getToken(req.Username)
+	authToken, err := h.getJWTToken(req.Username)
 	if err != nil {
 		responseJSON(ctx, w, http.StatusInternalServerError, GenericError("create token error: "+err.Error()))
 		return
 	}
 
 	responseJSON(ctx, w, http.StatusOK, AuthResponse{AccessToken: authToken})
+}
+
+// PutLink godoc
+// @Summary Create new short link
+// @Tags link
+// @Accept  json
+// @Produce json
+// @Param Authorization header string true "Bearer token"
+// @Param data body PutLinkRequest true "Input model"
+// @Success 200 {object} PutLinkResponse
+// @Failure 401 {object} GenericResponse
+// @Failure 400 {object} GenericResponse
+// @Failure 500 {object} GenericResponse
+// @Router /api/link [Put]
+// @BasePath /
+func (h *Handler) PutLink(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var req PutLinkRequest
+	if err := parseBodyJSON(r, &req); err != nil {
+		log.Ctx(ctx).Errorf("parse request error: %v", err.Error())
+		responseJSON(ctx, w, http.StatusBadRequest, GenericError("invalid request"))
+		return
+	}
+
+	if err := req.IsValid(); err != nil {
+		responseJSON(ctx, w, http.StatusBadRequest, GenericError("invalid request: "+err.Error()))
+		return
+	}
+
+	username := ctx.Value("username").(string)
+
+	shortLink, err := h.Usecase.PutLink(ctx, username, req.OriginalURL)
+	if err != nil {
+		responseJSON(ctx, w, http.StatusInternalServerError, GenericError(err.Error()))
+		return
+	}
+
+	responseJSON(ctx, w, http.StatusOK, PutLinkResponse{ShortURL: shortLink})
 }

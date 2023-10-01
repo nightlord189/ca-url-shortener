@@ -5,6 +5,7 @@ import (
 	"github.com/nightlord189/ca-url-shortener/internal/config"
 	"github.com/nightlord189/ca-url-shortener/internal/delivery/http"
 	"github.com/nightlord189/ca-url-shortener/internal/repo/mongo"
+	"github.com/nightlord189/ca-url-shortener/internal/repo/redis"
 	"github.com/nightlord189/ca-url-shortener/internal/usecase"
 	"go.uber.org/zap"
 )
@@ -27,7 +28,12 @@ func main() {
 		logger.Fatal("init mongo repo error: ", zap.Error(err))
 	}
 
-	usecaseInst := usecase.New(cfg, mongoRepo)
+	redisRepo, err := redis.New(cfg.Redis)
+	if err != nil {
+		logger.Fatal("init redis repo error: ", zap.Error(err))
+	}
+
+	usecaseInst := usecase.New(cfg, mongoRepo, redisRepo)
 
 	handler := http.New(cfg.HTTP, usecaseInst)
 
