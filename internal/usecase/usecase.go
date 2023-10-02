@@ -27,7 +27,7 @@ func New(cfg config.Config, storage adapters.IStorage, cache adapters.ICache) *U
 }
 
 func (u *Usecase) Auth(ctx context.Context, username, password string) error {
-	user, err := u.Storage.GetUser(ctx, username)
+	user, err := u.Storage.GetUserByUsername(ctx, username)
 	if err != nil && !errors.Is(err, ErrNotFound) {
 		return fmt.Errorf("get user error: %w", err)
 	}
@@ -54,7 +54,7 @@ func (u *Usecase) Auth(ctx context.Context, username, password string) error {
 }
 
 func (u *Usecase) PutLink(ctx context.Context, username, originalURL string) (string, error) {
-	user, err := u.Storage.GetUser(ctx, username)
+	user, err := u.Storage.GetUserByUsername(ctx, username)
 	if err != nil {
 		return "", fmt.Errorf("get user error: %w", err)
 	}
@@ -77,6 +77,24 @@ func (u *Usecase) PutLink(ctx context.Context, username, originalURL string) (st
 	return shortURL, nil
 }
 
-func (u *Usecase) GetOriginalLink(short string) (string, error) {
-	panic("not implemented")
+func (u *Usecase) GetOriginalLink(ctx context.Context, shortURL string) (string, error) {
+	originalURL, err := u.Cache.GetLink(ctx, shortURL)
+	if err == nil {
+		return originalURL, nil
+	}
+
+	originalURL, err = u.Storage.GetLink(ctx, shortURL)
+	if err != nil {
+		return "", fmt.Errorf("get originalURL error: %w", err)
+	}
+
+	if originalURL == "" {
+		return "", fmt.Errorf("originalURL not found")
+	}
+
+	if err := u.Cache.PutLink(ctx, shortURL, originalURL); err != nil {
+		log.Ctx(ctx).Error("put new originalURL to cache error", zap.Error(err))
+	}
+
+	return originalURL, nil
 }

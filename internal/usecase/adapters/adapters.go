@@ -7,7 +7,8 @@ import (
 
 type IStorage interface {
 	CreateUser(ctx context.Context, user *entity.User) error
-	GetUser(ctx context.Context, username string) (*entity.User, error)
+	GetUserByUsername(ctx context.Context, username string) (*entity.User, error)
+	GetLink(ctx context.Context, shortURL string) (string, error)
 	UpdateUserLinks(ctx context.Context, user *entity.User) error
 }
 

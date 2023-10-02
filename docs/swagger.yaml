@@ -34,6 +34,28 @@ definitions:
 info:
   contact: {}
 paths:
+  /{short}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: short relative url
+        in: path
+        name: short
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+      summary: Go to original url
+      tags:
+      - link
   /api/auth:
     post:
       consumes:

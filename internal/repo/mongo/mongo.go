@@ -8,6 +8,7 @@ import (
 	"github.com/nightlord189/ca-url-shortener/internal/entity"
 	"github.com/nightlord189/ca-url-shortener/internal/usecase"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -21,12 +22,17 @@ type Repo struct {
 
 func New(cfg config.MongoConfig) (*Repo, error) {
 	connectURI := fmt.Sprintf("mongodb://%s:%s@%s:%d", cfg.User, cfg.Password, cfg.Host, cfg.Port)
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(connectURI))
+
+	cmdMonitor := &event.CommandMonitor{
+		Started: func(_ context.Context, evt *event.CommandStartedEvent) {
+			fmt.Println(evt.Command)
+		},
+	}
+
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(connectURI).SetMonitor(cmdMonitor))
 	if err != nil {
 		return nil, fmt.Errorf("connect to mongodb error: %w", err)
 	}
-
-	client = client.Database(cfg.Database).Client()
 
 	return &Repo{
 		Config: cfg,
@@ -43,7 +49,7 @@ func (r *Repo) CreateUser(ctx context.Context, user *entity.User) error {
 	return err
 }
 
-func (r *Repo) GetUser(ctx context.Context, username string) (*entity.User, error) {
+func (r *Repo) GetUserByUsername(ctx context.Context, username string) (*entity.User, error) {
 	coll := r.client.Database(r.Config.Database).Collection(usersCollection)
 
 	filter := bson.D{{"username", username}}
@@ -59,6 +65,16 @@ func (r *Repo) GetUser(ctx context.Context, username string) (*entity.User, erro
 	default:
 		return nil, fmt.Errorf("find item error: %w", err)
 	}
+}
+
+func (r *Repo) GetLink(ctx context.Context, shortURL string) (string, error) {
+	coll := r.client.Database(r.Config.Database).Collection(usersCollection)
+
+	filter := bson.D{{Key: fmt.Sprintf("links.%s", shortURL), Value: bson.D{{Key: "$exists", Value: "true"}}}}
+	var item User
+	err := coll.FindOne(ctx, filter).Decode(&item)
+
+	return item.Links[shortURL], err
 }
 
 func (r *Repo) UpdateUserLinks(ctx context.Context, user *entity.User) error {

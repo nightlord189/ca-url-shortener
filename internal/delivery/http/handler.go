@@ -29,8 +29,8 @@ func (h *Handler) Run() error {
 	r.Use(middleware.Recoverer)
 
 	r.Post("/api/auth", h.Auth)
-
 	r.With(h.AuthMdw).Put("/api/link", h.PutLink)
+	r.Get("/*", h.GetLink)
 
 	r.Mount("/swagger", httpSwagger.WrapHandler)
 

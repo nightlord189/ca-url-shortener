@@ -5,6 +5,7 @@ import (
 	"github.com/nightlord189/ca-url-shortener/internal/usecase"
 	"github.com/nightlord189/ca-url-shortener/pkg/log"
 	"net/http"
+	"strings"
 )
 
 // Auth godoc
@@ -90,4 +91,30 @@ func (h *Handler) PutLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responseJSON(ctx, w, http.StatusOK, PutLinkResponse{ShortURL: shortLink})
+}
+
+// GetLink godoc
+// @Summary Go to original url
+// @Tags link
+// @Accept  json
+// @Produce json
+// @Param short path string true "short relative url"
+// @Success 200
+// @Failure 404
+// @Failure 500
+// @Router /{short} [Get]
+// @BasePath /
+func (h *Handler) GetLink(w http.ResponseWriter, r *http.Request) {
+	relativeURL := strings.Replace(r.URL.RequestURI(), "/", "", 1)
+
+	originalURL, err := h.Usecase.GetOriginalLink(r.Context(), relativeURL)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		if _, err = w.Write([]byte("not found")); err != nil {
+			log.Ctx(r.Context()).Errorf("write response error: %v", err.Error())
+		}
+		return
+	}
+
+	http.Redirect(w, r, originalURL, http.StatusFound)
 }
