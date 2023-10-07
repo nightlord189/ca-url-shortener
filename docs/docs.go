@@ -147,7 +147,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "302": {
                         "description": ""
                     },
                     "404": {

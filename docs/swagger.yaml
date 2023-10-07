@@ -47,7 +47,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "302":
           description: ""
         "404":
           description: ""

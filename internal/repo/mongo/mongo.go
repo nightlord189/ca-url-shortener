@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/nightlord189/ca-url-shortener/internal/config"
 	"github.com/nightlord189/ca-url-shortener/internal/entity"
@@ -26,13 +27,15 @@ func New(cfg config.MongoConfig) (*Repo, error) {
 	//nolint: nosprintfhostport //it's ok for database url
 	connectURI := fmt.Sprintf("mongodb://%s:%s@%s:%d", cfg.User, cfg.Password, cfg.Host, cfg.Port)
 
-	cmdMonitor := &event.CommandMonitor{
+	cmdLogger := &event.CommandMonitor{
 		Started: func(ctx context.Context, evt *event.CommandStartedEvent) {
 			log.Ctx(ctx).Debugf("mongo request: %v", evt.Command)
 		},
 	}
 
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(connectURI).SetMonitor(cmdMonitor))
+	opts := options.Client().ApplyURI(connectURI).SetMonitor(cmdLogger).SetTimeout(10 * time.Second)
+
+	client, err := mongo.Connect(context.Background(), opts)
 	if err != nil {
 		return nil, fmt.Errorf("connect to mongodb error: %w", err)
 	}
@@ -77,7 +80,14 @@ func (r *Repo) GetLink(ctx context.Context, shortURL string) (string, error) {
 	var item User
 	err := coll.FindOne(ctx, filter).Decode(&item)
 
-	return item.Links[shortURL], err
+	switch {
+	case errors.Is(err, mongo.ErrNoDocuments):
+		return "", usecase.ErrNotFound
+	case err == nil:
+		return item.Links[shortURL], nil
+	default:
+		return "", err
+	}
 }
 
 func (r *Repo) UpdateUserLinks(ctx context.Context, user *entity.User) error {

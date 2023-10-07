@@ -104,7 +104,7 @@ func (h *Handler) PutLink(w http.ResponseWriter, r *http.Request) {
 // @Accept  json
 // @Produce json
 // @Param short path string true "short relative url"
-// @Success 200
+// @Success 302
 // @Failure 404
 // @Failure 500
 // @Router /{short} [Get]
@@ -113,12 +113,16 @@ func (h *Handler) GetLink(w http.ResponseWriter, r *http.Request) {
 	relativeURL := strings.Replace(r.URL.RequestURI(), "/", "", 1)
 
 	originalURL, err := h.Usecase.GetOriginalLink(r.Context(), relativeURL)
-	if err != nil {
+
+	switch {
+	case errors.Is(err, usecase.ErrNotFound):
 		responseString(r.Context(), w, http.StatusNotFound, "not found")
 		return
+	case err == nil:
+		log.Ctx(r.Context()).Debugf("redirecting %s to %s", relativeURL, originalURL)
+		http.Redirect(w, r, originalURL, http.StatusFound)
+	default:
+		responseString(r.Context(), w, http.StatusInternalServerError, err.Error())
+		return
 	}
-
-	log.Ctx(r.Context()).Debugf("redirecting %s to %s", relativeURL, originalURL)
-
-	http.Redirect(w, r, originalURL, http.StatusFound)
 }

@@ -85,12 +85,12 @@ func (u *Usecase) GetOriginalLink(ctx context.Context, shortURL string) (string,
 	}
 
 	originalURL, err = u.Storage.GetLink(ctx, shortURL)
-	if err != nil {
+	if err != nil && !errors.Is(err, ErrNotFound) {
 		return "", fmt.Errorf("get originalURL error: %w", err)
 	}
 
 	if originalURL == "" {
-		return "", fmt.Errorf("originalURL not found")
+		return "", ErrNotFound
 	}
 
 	if err := u.Cache.PutLink(ctx, shortURL, originalURL); err != nil {
