@@ -26,6 +26,8 @@ linters:
     - gocritic
     - lll
     - gomnd
+    - forbidigo
+    - gosec
 
 run:
   skip-dirs:

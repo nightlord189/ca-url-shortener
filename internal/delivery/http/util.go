@@ -60,6 +60,13 @@ func responseJSON(ctx context.Context, w http.ResponseWriter, statusCode int, da
 	}
 }
 
+func responseString(ctx context.Context, w http.ResponseWriter, statusCode int, data string) {
+	w.WriteHeader(statusCode)
+	if _, err := w.Write([]byte(data)); err != nil {
+		log.Ctx(ctx).Errorf("write response error: %v", err.Error())
+	}
+}
+
 func parseBodyJSON(r *http.Request, out interface{}) error {
 	rawBody, err := io.ReadAll(r.Body)
 	if err != nil {

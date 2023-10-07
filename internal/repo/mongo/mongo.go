@@ -7,6 +7,7 @@ import (
 	"github.com/nightlord189/ca-url-shortener/internal/config"
 	"github.com/nightlord189/ca-url-shortener/internal/entity"
 	"github.com/nightlord189/ca-url-shortener/internal/usecase"
+	"github.com/nightlord189/ca-url-shortener/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -24,8 +25,8 @@ func New(cfg config.MongoConfig) (*Repo, error) {
 	connectURI := fmt.Sprintf("mongodb://%s:%s@%s:%d", cfg.User, cfg.Password, cfg.Host, cfg.Port)
 
 	cmdMonitor := &event.CommandMonitor{
-		Started: func(_ context.Context, evt *event.CommandStartedEvent) {
-			fmt.Println(evt.Command)
+		Started: func(ctx context.Context, evt *event.CommandStartedEvent) {
+			log.Ctx(ctx).Debugf("mongo request: %v", evt.Command)
 		},
 	}
 

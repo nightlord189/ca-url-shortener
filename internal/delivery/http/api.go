@@ -109,12 +109,11 @@ func (h *Handler) GetLink(w http.ResponseWriter, r *http.Request) {
 
 	originalURL, err := h.Usecase.GetOriginalLink(r.Context(), relativeURL)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		if _, err = w.Write([]byte("not found")); err != nil {
-			log.Ctx(r.Context()).Errorf("write response error: %v", err.Error())
-		}
+		responseString(r.Context(), w, http.StatusNotFound, "not found")
 		return
 	}
+
+	log.Ctx(r.Context()).Debugf("redirecting %s to %s", relativeURL, originalURL)
 
 	http.Redirect(w, r, originalURL, http.StatusFound)
 }

@@ -18,7 +18,14 @@ func main() {
 		panic(err.Error())
 	}
 
-	logger, _ := zap.NewProduction()
+	var logger *zap.Logger
+
+	if cfg.LogLevel == "debug" {
+		logger, _ = zap.NewDevelopment()
+	} else {
+		logger, _ = zap.NewProduction()
+	}
+
 	zap.ReplaceGlobals(logger)
 
 	logger.Info("start #2")
@@ -42,4 +49,6 @@ func main() {
 	if err := handler.Run(); err != nil {
 		logger.Error("run handler error: ", zap.Error(err))
 	}
+
+	// TODO: tests
 }
