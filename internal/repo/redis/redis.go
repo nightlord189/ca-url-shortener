@@ -3,9 +3,10 @@ package redis
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/nightlord189/ca-url-shortener/internal/config"
 	"github.com/redis/go-redis/v9"
-	"time"
 )
 
 const expiration = 1 * time.Hour

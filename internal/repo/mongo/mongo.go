@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/nightlord189/ca-url-shortener/internal/config"
 	"github.com/nightlord189/ca-url-shortener/internal/entity"
 	"github.com/nightlord189/ca-url-shortener/internal/usecase"
@@ -22,6 +23,7 @@ type Repo struct {
 }
 
 func New(cfg config.MongoConfig) (*Repo, error) {
+	//nolint: nosprintfhostport //it's ok for database url
 	connectURI := fmt.Sprintf("mongodb://%s:%s@%s:%d", cfg.User, cfg.Password, cfg.Host, cfg.Port)
 
 	cmdMonitor := &event.CommandMonitor{

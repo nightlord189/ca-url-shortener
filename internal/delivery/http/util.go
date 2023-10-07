@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/golang-jwt/jwt"
-	"github.com/nightlord189/ca-url-shortener/pkg/log"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/golang-jwt/jwt"
+	"github.com/nightlord189/ca-url-shortener/pkg/log"
 )
 
 func (h *Handler) getJWTToken(username string) (string, error) {

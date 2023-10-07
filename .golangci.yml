@@ -28,6 +28,12 @@ linters:
     - gomnd
     - forbidigo
     - gosec
+    - govet
+    - godox
+    - contextcheck
+    - revive
+    - gomodguard
+    - gomoddirectives
 
 run:
   skip-dirs:

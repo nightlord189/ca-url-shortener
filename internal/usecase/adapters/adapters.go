@@ -2,6 +2,7 @@ package adapters
 
 import (
 	"context"
+
 	"github.com/nightlord189/ca-url-shortener/internal/entity"
 )
 

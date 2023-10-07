@@ -2,8 +2,9 @@ package http
 
 import (
 	"fmt"
-	"github.com/nightlord189/ca-url-shortener/internal/entity"
 	"net/url"
+
+	"github.com/nightlord189/ca-url-shortener/internal/entity"
 )
 
 type GenericResponse struct {

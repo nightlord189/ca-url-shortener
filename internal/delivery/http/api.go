@@ -2,10 +2,11 @@ package http
 
 import (
 	"errors"
-	"github.com/nightlord189/ca-url-shortener/internal/usecase"
-	"github.com/nightlord189/ca-url-shortener/pkg/log"
 	"net/http"
 	"strings"
+
+	"github.com/nightlord189/ca-url-shortener/internal/usecase"
+	"github.com/nightlord189/ca-url-shortener/pkg/log"
 )
 
 // Auth godoc
@@ -82,7 +83,11 @@ func (h *Handler) PutLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	username := ctx.Value("username").(string)
+	username, ok := ctx.Value("username").(string)
+	if !ok {
+		responseJSON(ctx, w, http.StatusBadRequest, GenericError("invalid username format in context"))
+		return
+	}
 
 	shortLink, err := h.Usecase.PutLink(ctx, username, req.OriginalURL)
 	if err != nil {

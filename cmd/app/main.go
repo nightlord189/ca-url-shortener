@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/nightlord189/ca-url-shortener/internal/config"
 	"github.com/nightlord189/ca-url-shortener/internal/delivery/http"
 	"github.com/nightlord189/ca-url-shortener/internal/repo/mongo"

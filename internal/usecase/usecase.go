@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/nightlord189/ca-url-shortener/internal/config"
 	"github.com/nightlord189/ca-url-shortener/internal/entity"
 	"github.com/nightlord189/ca-url-shortener/internal/usecase/adapters"

@@ -2,12 +2,13 @@ package http
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	_ "github.com/nightlord189/ca-url-shortener/docs"
 	"github.com/nightlord189/ca-url-shortener/internal/config"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"net/http"
 )
 
 type Handler struct {

@@ -2,10 +2,15 @@ package http
 
 import (
 	"context"
-	"github.com/golang-jwt/jwt"
 	"net/http"
 	"strings"
+
+	"github.com/golang-jwt/jwt"
 )
+
+type ContextKey string
+
+const ContextUsername ContextKey = "username"
 
 func (h *Handler) AuthMdw(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +28,6 @@ func (h *Handler) AuthMdw(next http.Handler) http.Handler {
 		token := authSplitted[1]
 
 		parsedToken, err := h.isJWTTokenValid(token)
-
 		if err != nil {
 			responseJSON(r.Context(), w, http.StatusUnauthorized, GenericError(err.Error()))
 			return
@@ -35,7 +39,13 @@ func (h *Handler) AuthMdw(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "username", claims["username"].(string))
+		username, ok := claims["username"].(string)
+		if !ok {
+			responseJSON(r.Context(), w, http.StatusUnauthorized, GenericError("invalid username claim"))
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), ContextUsername, username)
 
 		// call the next handler in the chain, passing the response writer and
 		// the updated request object with the new context value.

@@ -2,12 +2,13 @@ package log
 
 import (
 	"context"
+
 	"go.uber.org/zap"
 )
 
 type loggerKeyType int
 
-const loggerKey = iota
+const loggerKey loggerKeyType = iota
 
 func Ctx(ctx context.Context) *zap.SugaredLogger {
 	if ctx == nil {
