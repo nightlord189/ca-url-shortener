@@ -41,7 +41,7 @@ func main() {
 		logger.Fatal("init redis repo error: ", zap.Error(err))
 	}
 
-	usecaseInst := usecase.New(cfg, mongoRepo, redisRepo)
+	usecaseInst := usecase.New(mongoRepo, redisRepo)
 
 	handler := http.New(cfg.HTTP, usecaseInst)
 

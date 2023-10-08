@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/nightlord189/ca-url-shortener/internal/config"
 	"github.com/nightlord189/ca-url-shortener/internal/entity"
 	"github.com/nightlord189/ca-url-shortener/internal/usecase/adapters"
 	"github.com/nightlord189/ca-url-shortener/pkg"
@@ -14,14 +13,12 @@ import (
 )
 
 type Usecase struct {
-	Config  config.Config
 	Storage adapters.IStorage
 	Cache   adapters.ICache
 }
 
-func New(cfg config.Config, storage adapters.IStorage, cache adapters.ICache) *Usecase {
+func New(storage adapters.IStorage, cache adapters.ICache) *Usecase {
 	return &Usecase{
-		Config:  cfg,
 		Storage: storage,
 		Cache:   cache,
 	}
