@@ -36,6 +36,7 @@ linters:
     - gomoddirectives
 
 run:
+  tests: false
   skip-dirs:
     - configs
     - docs
