@@ -68,7 +68,7 @@ I think repo logic is database-relative and not need to be additionaly tested, w
    Similarly, the handler logic is quite simple and could work without additional tests. However, when the service will become more complex, you can write tests for these layers too.
 4. Martin's approach contain at 4 layers but this project contains only 3. Why?  
 At first, Martin said: "There’s no rule that says you must always have just these four". So you can and must adopt any architecture rules to your project for convenient and productive work.  
-At second, in this project external libraries like go-redis, http and mongo-driver work as four circle (External interfaces/drivers), so three layers are enough.
+At second, in this project external libraries like go-redis, http and mongo-driver work as fourth circle (External interfaces/drivers), so three layers are enough.
 5. Why expiration time of access tokens is so long? Why you don't use access/refresh tokens approach?  
 I used this approach to simplify logic. Of course in real project it's better to use both access/refresh tokens or other production-ready authorization approach.
 6. Can i use/fork this project?  
