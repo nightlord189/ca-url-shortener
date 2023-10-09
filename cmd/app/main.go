@@ -50,6 +50,4 @@ func main() {
 	if err := handler.Run(); err != nil {
 		logger.Error("run handler error: ", zap.Error(err))
 	}
-	
-	// TODO: docs
 }
